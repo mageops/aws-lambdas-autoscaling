@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/mageops/aws-lambdas-autoscaling.svg?branch=master)](https://travis-ci.com/mageops/aws-lambdas-autoscaling)
+
 # MageOps AWS Lambdas for Handling Autoscaling
 
 This lambdas perform various tasks related to managing ASGs in response

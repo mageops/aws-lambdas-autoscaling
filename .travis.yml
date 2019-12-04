@@ -12,8 +12,8 @@ env:
   - LAMBDA_RUNTIME=python3
 
 jobs:
-allow_failures:
-  - env: LAMBDA_RUNTIME=python3
+  allow_failures:
+    - env: LAMBDA_RUNTIME=python3
 
 script: >
   docker run \
