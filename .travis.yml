@@ -1,0 +1,33 @@
+os: linux
+language: generic
+
+services:
+  - docker
+
+before_install:
+  - docker pull mageops/aws-lambda-build
+
+env:
+  - LAMBDA_RUNTIME=python2
+  - LAMBDA_RUNTIME=python3
+
+jobs:
+allow_failures:
+  - env: LAMBDA_RUNTIME=python3
+
+script: >
+  docker run \
+    --rm \
+    --tty \
+    --volume "$(PWD):/var/app" \
+    mageops/aws-lambda-build $LAMBDA_RUNTIME autoscaling-lambdas-deploy-package
+
+deploy:
+  - provider: releases
+    token: $GITHUB_OAUTH_TOKEN
+    file_glob: true
+    file: "*deploy-package*.zip"
+    skip_cleanup: true
+    cleanup: false
+    on:
+      tags: true
