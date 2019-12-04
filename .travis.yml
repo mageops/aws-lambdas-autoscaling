@@ -19,7 +19,7 @@ script: >
   docker run \
     --rm \
     --tty \
-    --volume "$(PWD):/var/app" \
+    --volume "$(pwd):/var/app" \
     mageops/aws-lambda-build $LAMBDA_RUNTIME autoscaling-lambdas-deploy-package
 
 deploy:

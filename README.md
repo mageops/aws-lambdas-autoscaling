@@ -16,7 +16,7 @@ the entrypoint will changed based on which one is used.
 ### Generating deploy package
 
 ```bash
-docker run --rm --tty --volume "$(PWD):/var/app" mageops/aws-lambda-build python2 autoscaling-lambdas-deploy-package
+docker run --rm --tty --volume "$(pwd):/var/app" mageops/aws-lambda-build python2 autoscaling-lambdas-deploy-package
 ```
 
 #### Docker image for building lambdas
