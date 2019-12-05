@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import boto3
 import os
 import json
@@ -41,21 +43,21 @@ def update_backends(exclude_backend_instance_ids=None, wait_for_finish=False):
     update_lambda_name = os.environ['UPDATE_LAMBDA_NAME']
 
     if exclude_backend_instance_ids:
-        print "Ignoring backend instances %s" % ', '.join(exclude_backend_instance_ids)
+        print("Ignoring backend instances %s" % ', '.join(exclude_backend_instance_ids))
 
     varnish_hosts = get_ec2_hosts(varnish_instance_filter)
     backend_hosts = get_ec2_hosts(backend_instance_filter, exclude_backend_instance_ids)
     extra_hosts = get_ec2_hosts(extra_instance_filter, exclude_backend_instance_ids)
 
-    print "Varnish hosts to be updated: %s, found using filter %s" % (varnish_hosts, varnish_instance_filter)
-    print "New backend hosts: %s, found using filter %s" % (backend_hosts, backend_instance_filter)
-    print "New extra hosts: %s, found using filter %s" % (extra_hosts, extra_instance_filter)
+    print("Varnish hosts to be updated: %s, found using filter %s" % (varnish_hosts, varnish_instance_filter))
+    print("New backend hosts: %s, found using filter %s" % (backend_hosts, backend_instance_filter))
+    print("New extra hosts: %s, found using filter %s" % (extra_hosts, extra_instance_filter))
 
     s3_client = boto3.client('s3')
     varnish_key_object = s3_client.get_object(Bucket=varnish_key_bucket, Key=varnish_key_name)
     varnish_key = varnish_key_object['Body'].read()
 
-    print "Downloaded varnish ssh key from %s/%s" % (varnish_key_bucket, varnish_key_name)
+    print("Downloaded varnish ssh key from %s/%s" % (varnish_key_bucket, varnish_key_name))
 
     payload = json.dumps({
         'varnish_ssh_key': varnish_key,
@@ -66,10 +68,10 @@ def update_backends(exclude_backend_instance_ids=None, wait_for_finish=False):
     })
 
     if wait_for_finish:
-        print 'Invoking update lambda with wait'
+        print('Invoking update lambda with wait')
         invocation_type = 'RequestResponse'
     else:
-        print 'Invoking update lambda asynchronously'
+        print('Invoking update lambda asynchronously')
         invocation_type = 'Event'
 
     boto3.client('lambda').invoke(
@@ -80,7 +82,7 @@ def update_backends(exclude_backend_instance_ids=None, wait_for_finish=False):
     )
 
     if wait_for_finish:
-        print 'Update lambda finished'
+        print('Update lambda finished')
 
 
 def complete_lifecycle_action(hook, asg, instance_id, action=LIFECYCLE_ACTION_CONTINUE):
@@ -93,14 +95,14 @@ def complete_lifecycle_action(hook, asg, instance_id, action=LIFECYCLE_ACTION_CO
         InstanceId=instance_id
     )
 
-    print "Asg continue response: %s" % response
+    print("Asg continue response: %s" % response)
 
 
 def handle_plain_event(event_type, event_data):
-    print 'Handling plain event "%s"' % event_type
+    print('Handling plain event "%s"' % event_type)
 
     if event_type != LAUNCH_SUCCESSFUL_EVENT:
-        print 'Unsupported event type, doing nothing'
+        print('Unsupported event type, doing nothing')
         return
 
     update_backends()
@@ -112,13 +114,13 @@ def handle_lifecycle_event(event_type, event_data):
     asg_name = event_data[KEY_ASG_NAME]
     instance_id = event_data[KEY_EC2_INSTANCE_ID]
 
-    print 'Handling lifecycle event "%s" / hook "%s"' % (event_type, current_hook)
+    print('Handling lifecycle event "%s" / hook "%s"' % (event_type, current_hook))
 
     if current_hook == terminate_hook:
         update_backends([instance_id], True)
         complete_lifecycle_action(current_hook, asg_name, instance_id, LIFECYCLE_ACTION_CONTINUE)
     else:
-        print 'Unsupported lifecycle hook, doing nothing'
+        print('Unsupported lifecycle hook, doing nothing')
 
 
 def handle(event, context):

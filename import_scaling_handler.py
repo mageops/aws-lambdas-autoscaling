@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import boto3
 import os
 import json
@@ -7,7 +9,7 @@ asg_client = boto3.client('autoscaling')
 
 
 def ensure_running(asg_name):
-    print 'Setting desired capacity of %s to 1' % asg_name
+    print('Setting desired capacity of %s to 1' % asg_name)
     asg_client.set_desired_capacity(
         AutoScalingGroupName=asg_name,
         DesiredCapacity=1,
@@ -16,7 +18,7 @@ def ensure_running(asg_name):
 
 
 def ensure_notrunning(asg_name):
-    print 'Setting desired capacity of %s to 0' % asg_name
+    print('Setting desired capacity of %s to 0' % asg_name)
     asg_client.set_desired_capacity(
         AutoScalingGroupName=asg_name,
         DesiredCapacity=0,
@@ -41,8 +43,8 @@ def handle(event, context):
     # if we'd like to check current ASG status that's additional call anyway
     # not worth it
     if is_import_needed(check_endpoint):
-        print 'Import instance needed'
+        print('Import instance needed')
         ensure_running(asg_name)
     else:
-        print 'Import not needed'
+        print('Import not needed')
         ensure_notrunning(asg_name)

@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import boto3
 import os
 import json
@@ -8,9 +10,9 @@ import jinja2
 from datetime import datetime
 
 def execute_command(ssh_client, command):
-    print 'Executing %s' % command
+    print('Executing %s' % command)
     stdin, stdout, stderr = ssh_client.exec_command(command)
-    print stdout.read(), stderr.read()
+    print(stdout.read(), stderr.read())
 
 
 def handle(event, context):
@@ -34,14 +36,14 @@ def handle(event, context):
         ssh_client = paramiko.SSHClient()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        print 'Connecting to %s...' % host
+        print('Connecting to %s...' % host)
         ssh_client.connect(hostname = host, username = ssh_username, pkey = ssh_key)
 
-        print 'Copying new backends vcl to %s ...' % new_vcl_name
+        print('Copying new backends vcl to %s ...' % new_vcl_name)
         sftp = ssh_client.open_sftp()
         sftp.putfo(StringIO.StringIO(backend_vcl), new_vcl_name)
 
-        print 'Updating vcls...'
+        print('Updating vcls...')
         execute_command(ssh_client, 'sudo /usr/bin/varnish_update_backends %s' % new_vcl_name)
 
         ssh_client.close()

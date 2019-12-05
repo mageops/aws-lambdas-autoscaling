@@ -3,7 +3,7 @@
 # MageOps AWS Lambdas for Handling Autoscaling
 
 This lambdas perform various tasks related to managing ASGs in response
-to various events and conditions. They are strongly coupled to 
+to various events and conditions. They are strongly coupled to
 [MageOps infrastructure setup](https://github.com/mageops/ansible-workflow).
 
 ## Single Deploy Package
@@ -16,7 +16,7 @@ the entrypoint will changed based on which one is used.
 ### Generating deploy package
 
 ```bash
-docker run --rm --tty --volume "$(pwd):/var/app" mageops/aws-lambda-build python2 autoscaling-lambdas-deploy-package
+docker run --rm --tty --volume "$(pwd):/var/app" mageops/aws-lambda-build python3 autoscaling-lambdas-deploy-package
 ```
 
 #### Docker image for building lambdas
