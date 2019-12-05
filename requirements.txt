@@ -1,3 +1,4 @@
 ipaddress
-Jinja2
+# Since 2.9 fails compilation on python2 due to async
+Jinja2 < 2.9
 paramiko
