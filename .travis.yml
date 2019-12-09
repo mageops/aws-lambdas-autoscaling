@@ -8,7 +8,6 @@ before_install:
   - docker pull mageops/aws-lambda-build
 
 env:
-  - LAMBDA_RUNTIME=python2
   - LAMBDA_RUNTIME=python3
 
 script: >
