@@ -13,6 +13,18 @@ KEY_LIFECYCLE = 'LifecycleHookName'
 KEY_EC2_INSTANCE_ID = 'EC2InstanceId'
 KEY_ASG_NAME = 'AutoScalingGroupName'
 
+def decode_payload(p):
+    if isinstance(p, dict):
+        return { k: decode_payload(v) for k, v in p.items() }
+
+    if isinstance(p, list):
+        return list(map(decode_payload, p))
+
+    if isinstance(p, bytes):
+        return p.decode()
+
+    return p
+
 
 def get_ec2_hosts(instance_filter, exclude_instance_ids=None):
     if exclude_instance_ids is None:
@@ -59,13 +71,13 @@ def update_backends(exclude_backend_instance_ids=None, wait_for_finish=False):
 
     print("Downloaded varnish ssh key from %s/%s" % (varnish_key_bucket, varnish_key_name))
 
-    payload = json.dumps({
+    payload = json.dumps(decode_payload({
         'varnish_ssh_key': varnish_key,
         'varnish_ssh_username': varnish_ssh_username,
         'varnish_hosts': varnish_hosts,
         'backend_hosts': backend_hosts,
         'extra_hosts': extra_hosts,
-    })
+    }))
 
     if wait_for_finish:
         print('Invoking update lambda with wait')
