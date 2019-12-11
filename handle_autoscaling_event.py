@@ -55,7 +55,7 @@ def update_backends(exclude_backend_instance_ids=None, wait_for_finish=False):
 
     s3_client = boto3.client('s3')
     varnish_key_object = s3_client.get_object(Bucket=varnish_key_bucket, Key=varnish_key_name)
-    varnish_key = varnish_key_object['Body'].read()
+    varnish_key = varnish_key_object['Body'].read().decode('utf-8')
 
     print("Downloaded varnish ssh key from %s/%s" % (varnish_key_bucket, varnish_key_name))
 
