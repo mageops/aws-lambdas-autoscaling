@@ -2,10 +2,11 @@ from __future__ import print_function
 
 import boto3
 import os
+import io
 import json
 import paramiko
 import jinja2
-from io import StringIO
+
 
 from datetime import datetime
 
@@ -30,7 +31,7 @@ def handle(event, context):
     backend_template_vars['varnish_backend_instances_extra'] = [{'private_ip_address': ip, 'instance_id': 'ext' + ip.replace('.', '')} for ip in extra_hosts]
     backend_vcl = jinja2.Environment(loader=jinja2.BaseLoader).from_string(backend_template).render(**backend_template_vars)
 
-    ssh_key = paramiko.RSAKey.from_private_key(StringIO.StringIO(ssh_key))
+    ssh_key = paramiko.RSAKey.from_private_key(io.StringIO(ssh_key))
 
     for host in varnish_hosts:
         ssh_client = paramiko.SSHClient()
@@ -41,7 +42,7 @@ def handle(event, context):
 
         print('Copying new backends vcl to %s ...' % new_vcl_name)
         sftp = ssh_client.open_sftp()
-        sftp.putfo(StringIO.StringIO(backend_vcl), new_vcl_name)
+        sftp.putfo(io.StringIO(backend_vcl), new_vcl_name)
 
         print('Updating vcls...')
         execute_command(ssh_client, 'sudo /usr/bin/varnish_update_backends %s' % new_vcl_name)
