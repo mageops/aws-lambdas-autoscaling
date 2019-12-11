@@ -4,8 +4,8 @@ import boto3
 import os
 import json
 import paramiko
-import StringIO
 import jinja2
+from io import StringIO
 
 from datetime import datetime
 
