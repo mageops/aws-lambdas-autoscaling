@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/travis/mageops/aws-lambdas-autoscaling?label=Deploy+Package+Build)](https://travis-ci.com/mageops/aws-lambdas-autoscaling)
+[![Build Status](https://img.shields.io/travis/com/mageops/aws-lambdas-autoscaling?label=Deploy+Package+Build)](https://travis-ci.com/mageops/aws-lambdas-autoscaling)
 
 # MageOps AWS Lambdas for Handling Autoscaling
 
