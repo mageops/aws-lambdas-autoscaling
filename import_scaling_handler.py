@@ -3,7 +3,8 @@ from __future__ import print_function
 import boto3
 import os
 import json
-import urllib2
+import urllib.request
+import urllib.error
 
 asg_client = boto3.client('autoscaling')
 
@@ -25,15 +26,33 @@ def ensure_notrunning(asg_name):
         HonorCooldown=True
     )
 
-
 def is_import_needed(check_endpoint):
-    request = urllib2.Request(
+    request = urllib.request.Request(
         url=check_endpoint,
         headers={'Accept': 'application/json'}
     )
 
-    return urllib2.urlopen(request).read().strip().lower() == 'true'
+    try:
+        with urllib.request.urlopen(request) as response:
+            content = response.read().decode('utf-8').strip().lower()
 
+            print('Import check API endpoint "%s" returned: [%d %s] %s' % (
+                check_endpoint,
+                response.status,
+                response.msg,
+                content
+            ))
+
+            return content == 'true'
+    except urllib.error.HTTPError as error:
+        print('Import check API endpoint "%s" has failed: [%d %s] %s' % (
+                check_endpoint,
+                error.code,
+                error.msg,
+                error.read().decode('utf-8')
+            ))
+
+        raise error
 
 def handle(event, context):
     asg_name = os.environ['ASG_NAME']
