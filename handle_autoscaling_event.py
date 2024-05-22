@@ -3,6 +3,7 @@ from __future__ import print_function
 import boto3
 import os
 import json
+import time
 
 LIFECYCLE_ACTION_CONTINUE = 'CONTINUE'
 LIFECYCLE_ACTION_ABANDON = 'ABANDON'
@@ -128,6 +129,10 @@ def handle_lifecycle_event(event_type, event_data):
 
     print('Handling lifecycle event "%s" / hook "%s"' % (event_type, current_hook))
 
+    # Wait 5s before continuing to allow aws to propagate instance statuses
+    # In some cases when we query instances we receive outdated statuses from before received event
+    time.sleep(5)
+
     if current_hook == terminate_hook:
         update_backends([instance_id], True)
         complete_lifecycle_action(current_hook, asg_name, instance_id, LIFECYCLE_ACTION_CONTINUE)
@@ -150,24 +155,3 @@ def handle(event, context):
         handle_plain_event(event_type, event_data)
 
     return "All good"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
